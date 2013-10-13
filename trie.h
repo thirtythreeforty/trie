@@ -1,8 +1,7 @@
 #ifndef TRIE_H
 #define TRIE_H
 
-#include <utility>
-#include <vector>
+#include <map>
 #include <memory>
 #include <iterator>
 
@@ -70,8 +69,8 @@ public:
 	static void swap(trie<T>& a, trie<T>& b) { a.swap(b); }
 
 private:
-	std::vector<std::pair<typename T::value_type, std::unique_ptr<trie<T>>>> children;
-	std::unique_ptr<trie<T>> parent;
+	std::map<typename T::value_type, std::unique_ptr<trie<T>>> children;
+	trie<T>* parent;
 };
 
 template<typename T>
@@ -85,12 +84,15 @@ trie<T>::trie(const trie<T>& other, trie<T>* const parent) :
 {
 	// Protip:  change unique_ptr to smart_ptr and implement a copy-on-write
 	// performance boost
-	// Allocate all needed memory at once, faster this way
-	children.reserve(other.children.size());
 
 	// Deep copy the children
-	for(auto it : other.children)
-		children.emplace_back({*it.first, {**it.second}});
+	for(auto const &it : other.children) {
+		// Separate creation of unique_ptr for exception safety
+		std::unique_ptr<trie<T>> p(new trie<T>(*it.second));
+		children.emplace(it.first, std::move(p));
+	}
 }
+
+
 
 #endif
