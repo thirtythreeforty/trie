@@ -22,8 +22,8 @@ public:
 	typedef iterator const_iterator;
 
 	// constructors
-	trie();
-	trie(const trie<T>&);
+	trie(trie<T>* const = nullptr);
+	trie(const trie<T>&, trie<T>* const = nullptr);
 	trie(trie<T>&&);
 	template<typename InputIt> trie(InputIt, InputIt);
 
@@ -73,5 +73,24 @@ private:
 	std::vector<std::pair<typename T::value_type, std::unique_ptr<trie<T>>>> children;
 	std::unique_ptr<trie<T>> parent;
 };
+
+template<typename T>
+trie<T>::trie(trie<T>* const parent) :
+	parent{parent}
+{}
+
+template<typename T>
+trie<T>::trie(const trie<T>& other, trie<T>* const parent) :
+	parent{parent}
+{
+	// Protip:  change unique_ptr to smart_ptr and implement a copy-on-write
+	// performance boost
+	// Allocate all needed memory at once, faster this way
+	children.reserve(other.children.size());
+
+	// Deep copy the children
+	for(auto it : other.children)
+		children.emplace_back({*it.first, {**it.second}});
+}
 
 #endif
