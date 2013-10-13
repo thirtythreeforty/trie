@@ -26,8 +26,8 @@ public:
 	trie(trie<T>&&);
 	template<typename InputIt> trie(InputIt, InputIt);
 
-	// destructors
-	~trie();
+	// destructor, auto-generated one is fine
+	// ~trie();
 
 	// operators
 	trie<T>& operator=(const trie<T>&);
