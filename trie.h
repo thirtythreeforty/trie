@@ -66,7 +66,7 @@ public:
 	const_iterator upper_bound(const value_type&) const;
 	std::pair<const_iterator,const_iterator> equal_range(const value_type&) const;
 
-	void swap(trie<T>);
+	void swap(trie<T>&);
 	static void swap(trie<T>& a, trie<T>& b) { a.swap(b); }
 
 private:
