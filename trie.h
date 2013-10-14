@@ -5,6 +5,7 @@
 #include <memory>
 #include <iterator>
 #include <utility>
+#include <algorithm>
 
 template<typename T>
 class trie {
@@ -25,7 +26,7 @@ public:
 	trie(trie<T>* const = nullptr);
 	trie(const trie<T>&, trie<T>* const = nullptr);
 	trie(trie<T>&&);
-	template<typename InputIt> trie(InputIt, InputIt);
+	template<typename InputIt> trie(InputIt, InputIt, trie<T>* const = nullptr);
 
 	// destructor, auto-generated one is fine
 	// ~trie();
@@ -98,5 +99,20 @@ template<typename T>
 trie<T>::trie(trie<T>&& other) :
 	parent{other.parent}, children{std::move(other.children)}
 {}
+
+template<typename T>
+template<typename InputIt>
+trie<T>::trie(InputIt begin, InputIt end, trie<T>* const parent) :
+	parent{parent}
+{
+	std::for_each(std::move(begin), std::move(end), this->insert);
+}
+
+template<typename T>
+trie<T>& trie<T>::operator=(const trie<T>& other)
+{
+	swap(*this, other);
+	return *this;
+}
 
 #endif
