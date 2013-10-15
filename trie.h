@@ -29,7 +29,7 @@ public:
 	template<typename InputIt> trie(InputIt, InputIt, trie<T>* const = nullptr);
 
 	// destructor, auto-generated one is fine
-	// ~trie();
+	~trie() =default;
 
 	// operators
 	trie<T>& operator=(const trie<T>&);
