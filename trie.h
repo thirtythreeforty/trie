@@ -131,4 +131,54 @@ typename trie<T>::iterator trie<T>::end()
 	return {std::move(temp), {}, true};
 }
 
+template<typename T>
+std::pair<typename trie<T>::iterator,bool> trie<T>::insert(const value_type& value)
+{
+	bool inserted = false;
+	bool at_leaf = false;
+	std::stack<typename iterator::state> parents;
+	trie<T>* currentNode{this};
+
+	for(auto it = value.cbegin(); it != value.cend(); ++it) {
+		bool is_last = (it + 1 == value.end());
+		auto childIt = currentNode->children.find(*it);
+		if(childIt == currentNode->children.end()) {
+			inserted = true;
+			if(is_last) {
+				// The sequence is new to this trie, so insert it.
+				// It is the last element, so don't create a new trie.
+				parents.emplace(
+					currentNode,
+					currentNode->children.emplace(std::make_pair(*it, std::unique_ptr<trie<T>>(nullptr))).first
+				);
+			}
+			else {
+				// Create a new trie and follow it.
+				std::unique_ptr<trie<T>> p(new trie<T>(currentNode));
+				currentNode = currentNode->children.emplace(*it, std::move(p)).first->second.get();
+			}
+		}
+		else {
+			if(is_last) {
+				if(childIt->second != nullptr) {
+					inserted = true;
+					at_leaf = true;
+					childIt->second->is_leaf = true;
+				}
+				// Done.  Build a return value.
+				// TODO
+			}
+			else {
+				if(childIt->second == nullptr) {
+					childIt->second.reset(new trie<T>(currentNode));
+					inserted = true;
+				}
+				currentNode = childIt->second.get();
+			}
+		}
+	}
+	// Build pair and return it
+	return {{std::move(parents), value, at_leaf}, inserted};
+}
+
 #endif
