@@ -11,11 +11,13 @@ class trie<T>::iterator {
 		const trie<T>* node;
 		typename std::map<typename T::value_type, std::unique_ptr<trie<T>>>::const_iterator node_map_it;
 	};
+	enum class fall_to {left, right};
 public:
 	iterator() =default;
 	iterator(trie<T>* node) {
 		parents.emplace(node, node->children.cbegin());
 		at_end = (parents.top().node_map_it == parents.top().node->children.cend());
+		at_leaf = parents.top().node->is_leaf;
 		fall_down();
 	}
 	~iterator() =default;
@@ -39,14 +41,24 @@ public:
 	const T* operator->() const { return &built; }
 
 	void operator++() {
-		while(++parents.top().node_map_it == parents.top().node->children.cend())
-			walk_up();
+		if(at_leaf)
+			at_leaf = false;
+		else
+			while(++parents.top().node_map_it == parents.top().node->children.cend())
+				walk_up();
 		fall_down();
 	}
 	void operator--() {
-		while(parents.top().node_map_it-- == parents.top().node->children.cbegin())
+		if(at_leaf)
 			walk_up();
-		fall_down();
+		while(parents.top().node_map_it-- == parents.top().node->children.cbegin()) {
+			at_leaf = parents.top().node->is_leaf;
+			if(at_leaf)
+				// No need to fall down.
+				return;
+			walk_up();
+		}
+		fall_down(fall_to::right);
 	}
 
 	bool operator==(const typename trie<T>::iterator& other) const {
@@ -56,12 +68,21 @@ public:
 private:
 	iterator(const std::stack<state>& parents, const T& built, bool at_end) :
 		parents{parents}, built{built}, at_end{at_end} {}
-	void inline fall_down() {
+	void inline fall_down(const enum fall_to fall = fall_to::left) {
 		// TODO: This function could possibly be made smaller.
 		trie<T>* child;
+		if(at_leaf)
+			return;
 		while((child = parents.top().node_map_it->second.get()) != nullptr) {
 			built.push_back(parents.top().node_map_it->first);
-			parents.emplace(child, child->children.cbegin());
+			if(fall == fall_to::left) {
+				parents.emplace(child, child->children.cbegin());
+				at_leaf = child->is_leaf;
+				if(at_leaf)
+					return;
+			}
+			else // fall_to::right
+				parents.emplace(child, --child->children.cend());
 		}
 		// One final push_back to put the final element (the one that has no
 		// children) in built.
@@ -77,4 +98,5 @@ private:
 	// using an end iterator, to gain some additional compatibility.
 	T built;
 	bool at_end;
+	bool at_leaf;
 };
