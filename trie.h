@@ -20,7 +20,7 @@ public:
 	typedef iterator const_iterator;
 
 	// constructors
-	trie(trie<T>* const = nullptr);
+	trie(trie<T>* const = nullptr, bool = false);
 	trie(const trie<T>&, trie<T>* const = nullptr);
 	trie(trie<T>&&);
 	template<typename InputIt> trie(InputIt, InputIt, trie<T>* const = nullptr);
@@ -77,8 +77,8 @@ private:
 #include "trie_iterator.h"
 
 template<typename T>
-trie<T>::trie(trie<T>* const parent) :
-	parent{parent}
+trie<T>::trie(trie<T>* const parent, bool is_leaf) :
+	parent{parent}, is_leaf{is_leaf}
 {}
 
 template<typename T>
