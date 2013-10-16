@@ -20,10 +20,10 @@ public:
 	typedef iterator const_iterator;
 
 	// constructors
-	trie(trie<T>* const = nullptr);
-	trie(const trie<T>&, trie<T>* const = nullptr);
+	trie(trie<T>* const);
+	trie(const trie<T>&, trie<T>* const);
 	trie(trie<T>&&);
-	template<typename InputIt> trie(InputIt, InputIt, trie<T>* const = nullptr);
+	template<typename InputIt> trie(InputIt, InputIt, trie<T>* const);
 
 	// destructor, auto-generated one is fine
 	~trie() =default;
@@ -69,7 +69,7 @@ public:
 
 private:
 	std::map<typename T::value_type, std::unique_ptr<trie<T>>> children;
-	trie<T>* parent;
+	trie<T>* parent = nullptr;
 };
 
 // Definition of trie<T>::iterator
