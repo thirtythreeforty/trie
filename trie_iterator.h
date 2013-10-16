@@ -15,6 +15,7 @@ public:
 	iterator() =default;
 	iterator(trie<T>* node) {
 		parents.emplace(node, node->children.cbegin());
+		at_end = (parents.top().node_map_it == parents.top().node->children.cend());
 		fall_down();
 	}
 	~iterator() =default;
@@ -53,6 +54,8 @@ public:
 	}
 	bool operator!=(const typename trie<T>::iterator& other) const { return !operator==(other); }
 private:
+	iterator(const std::stack<state>& parents, const T& built, bool at_end) :
+		parents{parents}, built{built}, at_end{at_end} {}
 	void inline fall_down() {
 		// TODO: This function could possibly be made smaller.
 		trie<T>* child;
@@ -73,5 +76,5 @@ private:
 	// TODO: we could switch the use of push_back and pop_back for insert and erase
 	// using an end iterator, to gain some additional compatibility.
 	T built;
-	bool at_end = false;
+	bool at_end;
 };
