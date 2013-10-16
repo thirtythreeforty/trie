@@ -70,6 +70,7 @@ public:
 private:
 	std::map<typename T::value_type, std::unique_ptr<trie<T>>> children;
 	trie<T>* parent = nullptr;
+	bool is_leaf = false;
 };
 
 // Definition of trie<T>::iterator
@@ -82,7 +83,7 @@ trie<T>::trie(trie<T>* const parent) :
 
 template<typename T>
 trie<T>::trie(const trie<T>& other, trie<T>* const parent) :
-	parent{parent}
+	parent{parent}, is_leaf{other.is_leaf}
 {
 	// Protip:  change unique_ptr to smart_ptr and implement a copy-on-write
 	// performance boost
@@ -97,7 +98,7 @@ trie<T>::trie(const trie<T>& other, trie<T>* const parent) :
 
 template<typename T>
 trie<T>::trie(trie<T>&& other) :
-	parent{other.parent}, children{std::move(other.children)}
+	parent{other.parent}, children{std::move(other.children)}, is_leaf{other.is_leaf}
 {}
 
 template<typename T>
