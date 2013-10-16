@@ -115,4 +115,19 @@ trie<T>& trie<T>::operator=(const trie<T>& other)
 	return *this;
 }
 
+template<typename T>
+typename trie<T>::iterator trie<T>::begin()
+{
+	return {this};
+}
+
+template<typename T>
+typename trie<T>::iterator trie<T>::end()
+{
+	// Here's where we use our friend privileges
+	std::stack<typename iterator::state> temp;
+	temp.push({this, this->children.cend()});
+	return {std::move(temp), {}, true};
+}
+
 #endif
