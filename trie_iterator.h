@@ -14,15 +14,15 @@ class trie<T>::iterator {
 	enum class fall_to {left, right};
 public:
 	iterator() =default;
-	iterator(trie<T>* node) {
+	iterator(const trie<T>* node) {
 		parents.emplace(node, node->children.cbegin());
 		at_end = (parents.top().node_map_it == parents.top().node->children.cend());
 		at_leaf = parents.top().node->is_leaf;
 		fall_down();
 	}
 	~iterator() =default;
-	iterator(typename trie<T>::iterator& other) =default;
-	iterator(typename trie<T>::iterator&& other) :
+	iterator(const typename trie<T>::iterator& other) =default;
+	iterator(const typename trie<T>::iterator&& other) :
 		parents{std::move(other.parents)},
 		built{std::move(other.built)}
 	{}
