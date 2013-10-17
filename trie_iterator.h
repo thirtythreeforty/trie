@@ -40,7 +40,7 @@ public:
 	const T& operator*() const { return built; }
 	const T* operator->() const { return &built; }
 
-	void operator++() {
+	trie<T>::iterator& operator++() {
 		remove_state_and_advance();
 
 		// Handle consequences of advance
@@ -48,7 +48,7 @@ public:
 			if(parents.top().node_map_it == parents.top().node->children.cend()) {
 				if(parents.size() == 1) {
 					at_end = true;
-					return;
+					return *this;
 				}
 				else {
 					parents.pop();
@@ -59,14 +59,15 @@ public:
 				step_down();
 		}
 		step_down();
+		return *this;
 	}
-	void operator--() {
+	trie<T>::iterator& operator--() {
 		while(!can_go_back()) {
 			if(!at_leaf)
 				built.pop_back();
 			if(parents.size() == 1) {
 				at_end = true;
-				return;
+				return *this;
 			}
 			else {
 				parents.pop();
@@ -77,6 +78,7 @@ public:
 		while(!at_valid_leaf())
 			step_down(false);
 		step_down(false);
+		return *this;
 	}
 
 	bool operator==(const typename trie<T>::iterator& other) const {
