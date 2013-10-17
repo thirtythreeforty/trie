@@ -49,7 +49,7 @@ public:
 	iterator erase(const_iterator, const_iterator);
 	void clear();
 
-	bool empty() const { return children.empty(); }
+	bool empty() const { return children.empty() && !is_leaf; }
 	size_type size() const;
 	size_type max_size() const;
 
