@@ -41,12 +41,24 @@ public:
 	const T* operator->() const { return &built; }
 
 	void operator++() {
-		if(at_leaf)
-			at_leaf = false;
-		else
-			while(++parents.top().node_map_it == parents.top().node->children.cend())
-				walk_up();
-		fall_down();
+		remove_state_and_advance();
+
+		// Handle consequences of advance
+		while(!at_valid_leaf()) {
+			if(parents.top().node_map_it == parents.top().node->children.cend()) {
+				if(parents.size() == 1) {
+					at_end = true;
+					return;
+				}
+				else {
+					parents.pop();
+					remove_state_and_advance();
+				}
+			}
+			else
+				step_down();
+		}
+		step_down();
 	}
 	void operator--() {
 		if(at_leaf)
@@ -91,6 +103,30 @@ private:
 	void inline walk_up() {
 		built.pop_back();
 		parents.pop();
+	}
+	void inline remove_state_and_advance() {
+		// Remove old state and advance
+		if(!at_leaf) {
+			built.pop_back();
+			++parents.top().node_map_it;
+		}
+		else
+			at_leaf = false;
+	}
+	bool inline at_valid_leaf() {
+		return parents.top().node_map_it != parents.top().node->children.cend() &&
+		       (at_leaf ||
+		        (parents.top().node_map_it->second.get() == nullptr));
+	}
+	void inline step_down() {
+		if(!at_leaf) {
+			built.push_back(parents.top().node_map_it->first);
+			if(parents.top().node_map_it->second.get() != nullptr) {
+				parents.emplace( parents.top().node_map_it->second.get(),
+				                 parents.top().node_map_it->second.get()->children.cbegin() );
+				at_leaf = parents.top().node->is_leaf;
+			}
+		}
 	}
 
 	std::stack<state> parents;
