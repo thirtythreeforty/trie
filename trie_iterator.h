@@ -123,11 +123,15 @@ private:
 	}
 	bool inline can_go_back() {
 		return (!at_leaf && parents.top().node->is_leaf) ||
-		       (parents.top().node_map_it != parents.top().node->children.cbegin());
+		       (parents.top().node_map_it != parents.top().node->children.cbegin()) ||
+		       (at_end && !parents.top().node->children.empty());
 	}
 	void inline remove_state_and_regress() {
 		// This function assumes we can_go_back().
-		built.pop_back();
+		if(at_end)
+			at_end = false;
+		else
+			built.pop_back();
 		if(parents.top().node_map_it == parents.top().node->children.cbegin())
 			at_leaf = true;
 		else
