@@ -43,7 +43,6 @@ public:
 
 	// other members
 	std::pair<iterator,bool> insert(const value_type&);
-	std::pair<iterator,bool> insert(value_type&& val);
 
 	template<class... Args>
 	std::pair<iterator,bool> emplace(Args&&...);
