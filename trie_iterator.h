@@ -84,8 +84,8 @@ public:
 	}
 	bool operator!=(const typename trie<T>::iterator& other) const { return !operator==(other); }
 private:
-	iterator(const std::stack<state>& parents, const T& built, bool at_end) :
-		parents{parents}, built{built}, at_end{at_end} {}
+	iterator(const std::stack<state>& parents, const T& built, bool at_end, bool at_leaf) :
+		parents{parents}, built{built}, at_end{at_end}, at_leaf{at_leaf} {}
 	void inline fall_down(const enum fall_to fall = fall_to::left) {
 		// TODO: This function could possibly be made smaller.
 		trie<T>* child;

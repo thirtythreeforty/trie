@@ -128,7 +128,7 @@ typename trie<T>::iterator trie<T>::end()
 	// Here's where we use our friend privileges
 	std::stack<typename iterator::state> temp;
 	temp.push({this, this->children.cend()});
-	return {std::move(temp), {}, true};
+	return {std::move(temp), {}, true, false};
 }
 
 template<typename T>
@@ -178,7 +178,7 @@ std::pair<typename trie<T>::iterator,bool> trie<T>::insert(const value_type& val
 		}
 	}
 	// Build pair and return it
-	return {{std::move(parents), value, at_leaf}, inserted};
+	return {{std::move(parents), value, at_leaf, false}, inserted};
 }
 
 #endif
