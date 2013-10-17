@@ -137,49 +137,59 @@ std::pair<typename trie<T>::iterator,bool> trie<T>::insert(const value_type& val
 	iterator it;
 	decltype(this) currentNode = this;
 
-	for(auto inputIt = value.cbegin(); inputIt != value.cend(); ++inputIt) {
-		bool is_last = (inputIt + 1 == value.end());
-
-		auto childIt = currentNode->children.find(*inputIt);
-		if(childIt == currentNode->children.end()) {
-			// Child is new.  Insert it with a link, to nullptr if it's the last.
+	if(value.empty()) {
+		// Special case for empty value
+		if(!currentNode->is_leaf) {
 			inserted = true;
-
-			decltype(this) newtrie {is_last ? nullptr : new trie<T>{currentNode}};
-			std::unique_ptr<trie<T>> newtrie_u_p(newtrie);
-
-			auto insertedIt = currentNode->children.emplace(*inputIt, std::move(newtrie_u_p)).first;
-			it.parents.emplace(currentNode, std::move(insertedIt));
-
-			currentNode = newtrie;
+			currentNode->is_leaf = true;
 		}
-		else {
-			// Child is found.  Move to it if it isn't nullptr.
-			// If it is nullptr, change it to a node with a leaf flag.
-			if(is_last) {
-				it.parents.emplace(currentNode, childIt);
-				if(childIt->second.get() != nullptr) {
-					// Basically descend *twice*
-					currentNode = childIt->second.get();
-					if(!currentNode->is_leaf) {
-						inserted = true;
-						currentNode->is_leaf = true;
-					}
-					it.parents.emplace(currentNode, currentNode->children.begin());
-					it.at_leaf = true;
-				}
+		it.parents.emplace(currentNode, currentNode->children.begin());
+		it.at_leaf = true;
+	}
+	else
+		for(auto inputIt = value.cbegin(); inputIt != value.cend(); ++inputIt) {
+			bool is_last = (inputIt + 1 == value.end());
+
+			auto childIt = currentNode->children.find(*inputIt);
+			if(childIt == currentNode->children.end()) {
+				// Child is new.  Insert it with a link, to nullptr if it's the last.
+				inserted = true;
+
+				decltype(this) newtrie {is_last ? nullptr : new trie<T>{currentNode}};
+				std::unique_ptr<trie<T>> newtrie_u_p(newtrie);
+
+				auto insertedIt = currentNode->children.emplace(*inputIt, std::move(newtrie_u_p)).first;
+				it.parents.emplace(currentNode, std::move(insertedIt));
+
+				currentNode = newtrie;
 			}
 			else {
-				if(childIt->second.get() == nullptr) {
-					childIt->second.reset(new trie<T>{currentNode, true});
-					inserted = true;
+				// Child is found.  Move to it if it isn't nullptr.
+				// If it is nullptr, change it to a node with a leaf flag.
+				if(is_last) {
+					it.parents.emplace(currentNode, childIt);
+					if(childIt->second.get() != nullptr) {
+						// Basically descend *twice*
+						currentNode = childIt->second.get();
+						if(!currentNode->is_leaf) {
+							inserted = true;
+							currentNode->is_leaf = true;
+						}
+						it.parents.emplace(currentNode, currentNode->children.begin());
+						it.at_leaf = true;
+					}
 				}
-				// Child now definitely exists, move to it.
-				it.parents.emplace(currentNode, childIt);
-				currentNode = childIt->second.get();
+				else {
+					if(childIt->second.get() == nullptr) {
+						childIt->second.reset(new trie<T>{currentNode, true});
+						inserted = true;
+					}
+					// Child now definitely exists, move to it.
+					it.parents.emplace(currentNode, childIt);
+					currentNode = childIt->second.get();
+				}
 			}
 		}
-	}
 	it.built = value;
 	return {std::move(it),inserted};
 }
