@@ -1,5 +1,12 @@
+#ifndef TRIE_ITERATOR_H
+#define TRIE_ITERATOR_H
+
+#include <iterator>
+
+#include "trie.h"
+
 template<typename T>
-class trie<T>::iterator {
+class trie<T>::iterator : public std::iterator<std::bidirectional_iterator_tag, T> {
 	friend class trie<T>;
 	// TODO: Either this structure or trie::parent is not needed
 	struct state {
@@ -13,6 +20,7 @@ class trie<T>::iterator {
 	};
 	enum class fall_to {left, right};
 public:
+	typedef T value_type;
 	iterator() =default;
 	iterator(const trie<T>* node) {
 		parents.emplace(node, node->children.cbegin());
@@ -148,3 +156,5 @@ private:
 	bool at_end;
 	bool at_leaf;
 };
+
+#endif
