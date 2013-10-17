@@ -24,7 +24,9 @@ public:
 	iterator(const typename trie<T>::iterator& other) =default;
 	iterator(const typename trie<T>::iterator&& other) :
 		parents{std::move(other.parents)},
-		built{std::move(other.built)}
+		built{std::move(other.built)},
+		at_end{other.at_end},
+		at_leaf{other.at_leaf}
 	{}
 	iterator& operator=(typename trie<T>::iterator other) {
 		swap(*this, other);
@@ -44,21 +46,7 @@ public:
 		remove_state_and_advance();
 
 		// Handle consequences of advance
-		while(!at_valid_leaf()) {
-			if(parents.top().node_map_it == parents.top().node->children.cend()) {
-				if(parents.size() == 1) {
-					at_end = true;
-					return *this;
-				}
-				else {
-					parents.pop();
-					remove_state_and_advance();
-				}
-			}
-			else
-				step_down();
-		}
-		step_down();
+		fall_down();
 		return *this;
 	}
 	trie<T>::iterator& operator--() {
@@ -88,25 +76,22 @@ public:
 private:
 	iterator(const std::stack<state>& parents, const T& built, bool at_end, bool at_leaf) :
 		parents{parents}, built{built}, at_end{at_end}, at_leaf{at_leaf} {}
-	void inline fall_down(const enum fall_to fall = fall_to::left) {
-		// TODO: This function could possibly be made smaller.
-		trie<T>* child;
-		if(at_leaf)
-			return;
-		while((child = parents.top().node_map_it->second.get()) != nullptr) {
-			built.push_back(parents.top().node_map_it->first);
-			if(fall == fall_to::left) {
-				parents.emplace(child, child->children.cbegin());
-				at_leaf = child->is_leaf;
-				if(at_leaf)
+	void fall_down(const enum fall_to fall = fall_to::left) {
+		while(!at_valid_leaf()) {
+			if(parents.top().node_map_it == parents.top().node->children.cend()) {
+				if(parents.size() == 1) {
+					at_end = true;
 					return;
+				}
+				else {
+					parents.pop();
+					remove_state_and_advance();
+				}
 			}
-			else // fall_to::right
-				parents.emplace(child, --child->children.cend());
+			else
+				step_down();
 		}
-		// One final push_back to put the final element (the one that has no
-		// children) in built.
-		built.push_back(parents.top().node_map_it->first);
+		step_down();
 	}
 	void inline walk_up() {
 		built.pop_back();
@@ -142,7 +127,7 @@ private:
 		       (at_leaf ||
 		        (parents.top().node_map_it->second.get() == nullptr));
 	}
-	void inline step_down(bool forward = true) {
+	void step_down(bool forward = true) {
 		if(!at_leaf) {
 			built.push_back(parents.top().node_map_it->first);
 			if(parents.top().node_map_it->second.get() != nullptr) {
