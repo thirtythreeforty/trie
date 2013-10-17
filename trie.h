@@ -94,7 +94,7 @@ trie<T>::trie(const trie<T>& other, trie<T>* const parent) :
 
 template<typename T>
 trie<T>::trie(trie<T>&& other) :
-	parent{other.parent}, children{std::move(other.children)}, is_leaf{other.is_leaf}
+	children{std::move(other.children)}, parent{other.parent}, is_leaf{other.is_leaf}
 {}
 
 template<typename T>
