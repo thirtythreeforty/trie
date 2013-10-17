@@ -44,6 +44,8 @@ public:
 	void swap(typename trie<T>::iterator& other) {
 		std::swap(parents, other.parents);
 		std::swap(built, other.built);
+		std::swap(at_end, other.at_end);
+		std::swap(at_leaf, other.at_leaf);
 	}
 	static void swap(typename trie<T>::iterator& a, typename trie<T>::iterator& b) { a.swap(b); }
 
