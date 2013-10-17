@@ -150,7 +150,8 @@ private:
 				                 forward?
 				                  parents.top().node_map_it->second.get()->children.cbegin() :
 				                  --parents.top().node_map_it->second.get()->children.cend() );
-				at_leaf = parents.top().node->is_leaf;
+				if(forward)
+					at_leaf = parents.top().node->is_leaf;
 			}
 		}
 	}
