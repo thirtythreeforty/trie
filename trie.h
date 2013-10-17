@@ -23,7 +23,7 @@ public:
 	trie(trie<T>* const = nullptr, bool = false);
 	trie(const trie<T>&, trie<T>* const = nullptr);
 	trie(trie<T>&&);
-	template<typename InputIt> trie(InputIt, InputIt, trie<T>* const = nullptr);
+	template<typename InputIt> trie(InputIt, InputIt, trie<T>* const = nullptr, bool = false);
 
 	// destructor, auto-generated one is fine
 	~trie() =default;
@@ -99,10 +99,11 @@ trie<T>::trie(trie<T>&& other) :
 
 template<typename T>
 template<typename InputIt>
-trie<T>::trie(InputIt begin, InputIt end, trie<T>* const parent) :
-	parent{parent}
+trie<T>::trie(InputIt begin, InputIt end, trie<T>* const parent, bool is_leaf) :
+	parent{parent}, is_leaf{is_leaf}
 {
-	std::for_each(std::move(begin), std::move(end), this->insert);
+	for(auto x = begin; x != end; ++x)
+		insert(*x);
 }
 
 template<typename T>
