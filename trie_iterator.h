@@ -61,16 +61,22 @@ public:
 		step_down();
 	}
 	void operator--() {
-		if(at_leaf)
-			walk_up();
-		while(parents.top().node_map_it-- == parents.top().node->children.cbegin()) {
-			at_leaf = parents.top().node->is_leaf;
-			if(at_leaf)
-				// No need to fall down.
+		while(!can_go_back()) {
+			if(!at_leaf)
+				built.pop_back();
+			if(parents.size() == 1) {
+				at_end = true;
 				return;
-			walk_up();
+			}
+			else {
+				parents.pop();
+				at_leaf = false;
+			}
 		}
-		fall_down(fall_to::right);
+		remove_state_and_regress();
+		while(!at_valid_leaf())
+			step_down(false);
+		step_down(false);
 	}
 
 	bool operator==(const typename trie<T>::iterator& other) const {
@@ -113,17 +119,31 @@ private:
 		else
 			at_leaf = false;
 	}
+	bool inline can_go_back() {
+		return (!at_leaf && parents.top().node->is_leaf) ||
+		       (parents.top().node_map_it != parents.top().node->children.cbegin());
+	}
+	void inline remove_state_and_regress() {
+		// This function assumes we can_go_back().
+		built.pop_back();
+		if(parents.top().node_map_it == parents.top().node->children.cbegin())
+			at_leaf = true;
+		else
+			--parents.top().node_map_it;
+	}
 	bool inline at_valid_leaf() {
 		return parents.top().node_map_it != parents.top().node->children.cend() &&
 		       (at_leaf ||
 		        (parents.top().node_map_it->second.get() == nullptr));
 	}
-	void inline step_down() {
+	void inline step_down(bool forward = true) {
 		if(!at_leaf) {
 			built.push_back(parents.top().node_map_it->first);
 			if(parents.top().node_map_it->second.get() != nullptr) {
 				parents.emplace( parents.top().node_map_it->second.get(),
-				                 parents.top().node_map_it->second.get()->children.cbegin() );
+				                 forward?
+				                  parents.top().node_map_it->second.get()->children.cbegin() :
+				                  --parents.top().node_map_it->second.get()->children.cend() );
 				at_leaf = parents.top().node->is_leaf;
 			}
 		}
