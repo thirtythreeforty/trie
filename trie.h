@@ -44,9 +44,6 @@ public:
 	// other members
 	std::pair<iterator,bool> insert(const value_type&);
 
-	template<class... Args>
-	std::pair<iterator,bool> emplace(Args&&...);
-
 	iterator erase(const_iterator);
 	size_type erase(const key_type&);
 	iterator erase(const_iterator, const_iterator);
