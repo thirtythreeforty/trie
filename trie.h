@@ -198,4 +198,16 @@ void trie<T>::clear()
 	children.clear();
 }
 
+template<typename T>
+typename trie<T>::size_type trie<T>::size() const
+{
+	size_type s = is_leaf ? 1 : 0;
+	for(const auto& child : children)
+		if(child.second != nullptr)
+			s += child.second->size();
+		else
+			++s;
+	return s;
+}
+
 #endif
