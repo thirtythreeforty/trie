@@ -64,7 +64,7 @@ public:
 	static void swap(trie<T>& a, trie<T>& b) { a.swap(b); }
 
 private:
-	std::map<typename T::value_type, std::unique_ptr<trie<T>>> children;
+	std::vector<std::pair<typename T::value_type, std::unique_ptr<trie<T>>>> children;
 	bool is_leaf = false;
 };
 
@@ -147,15 +147,20 @@ std::pair<typename trie<T>::iterator,bool> trie<T>::insert(const value_type& val
 		for(auto inputIt = value.cbegin(); inputIt != value.cend(); ++inputIt) {
 			bool is_last = (inputIt + 1 == value.end());
 
-			auto childIt = currentNode->children.find(*inputIt);
-			if(childIt == currentNode->children.end()) {
+			// A clever application of >= here allows us to re-use the iterator for emplace,
+			// should the requested element not be found.
+			auto childIt = std::find_if(currentNode->children.begin(), currentNode->children.end(),
+			                       [&inputIt](const std::pair<typename T::value_type,std::unique_ptr<trie<T>>> & x)
+			                       { return x.first >= *inputIt; });
+			// We must check if the iterator is at the end before trying to dereference it.
+			if(childIt == currentNode->children.end() || childIt->first != *inputIt) {
 				// Child is new.  Insert it with a link, to nullptr if it's the last.
 				inserted = true;
 
 				decltype(this) newtrie {is_last ? nullptr : new trie<T>};
 				std::unique_ptr<trie<T>> newtrie_u_p(newtrie);
 
-				auto insertedIt = currentNode->children.emplace(*inputIt, std::move(newtrie_u_p)).first;
+				auto insertedIt = currentNode->children.emplace(childIt, *inputIt, std::move(newtrie_u_p));
 				it.parents.emplace(currentNode, std::move(insertedIt));
 
 				currentNode = newtrie;
