@@ -20,10 +20,10 @@ public:
 	typedef iterator const_iterator;
 
 	// constructors
-	trie(trie<T>* const = nullptr, bool = false);
-	trie(const trie<T>&, trie<T>* const = nullptr);
+	trie(bool = false);
+	trie(const trie<T>&);
 	trie(trie<T>&&);
-	template<typename InputIt> trie(InputIt, InputIt, trie<T>* const = nullptr, bool = false);
+	template<typename InputIt> trie(InputIt, InputIt, bool = false);
 
 	// destructor, auto-generated one is fine
 	~trie() =default;
@@ -65,7 +65,6 @@ public:
 
 private:
 	std::map<typename T::value_type, std::unique_ptr<trie<T>>> children;
-	trie<T>* parent;
 	bool is_leaf = false;
 };
 
@@ -73,13 +72,13 @@ private:
 #include "trie_iterator.h"
 
 template<typename T>
-trie<T>::trie(trie<T>* const parent, bool is_leaf) :
-	parent{parent}, is_leaf{is_leaf}
+trie<T>::trie(bool is_leaf) :
+	is_leaf{is_leaf}
 {}
 
 template<typename T>
-trie<T>::trie(const trie<T>& other, trie<T>* const parent) :
-	parent{parent}, is_leaf{other.is_leaf}
+trie<T>::trie(const trie<T>& other) :
+	is_leaf{other.is_leaf}
 {
 	// Protip:  change unique_ptr to smart_ptr and implement a copy-on-write
 	// performance boost
@@ -94,13 +93,13 @@ trie<T>::trie(const trie<T>& other, trie<T>* const parent) :
 
 template<typename T>
 trie<T>::trie(trie<T>&& other) :
-	children{std::move(other.children)}, parent{other.parent}, is_leaf{other.is_leaf}
+	children{std::move(other.children)}, is_leaf{other.is_leaf}
 {}
 
 template<typename T>
 template<typename InputIt>
-trie<T>::trie(InputIt begin, InputIt end, trie<T>* const parent, bool is_leaf) :
-	parent{parent}, is_leaf{is_leaf}
+trie<T>::trie(InputIt begin, InputIt end, bool is_leaf) :
+	is_leaf{is_leaf}
 {
 	for(auto x = begin; x != end; ++x)
 		insert(*x);
@@ -153,7 +152,7 @@ std::pair<typename trie<T>::iterator,bool> trie<T>::insert(const value_type& val
 				// Child is new.  Insert it with a link, to nullptr if it's the last.
 				inserted = true;
 
-				decltype(this) newtrie {is_last ? nullptr : new trie<T>{currentNode}};
+				decltype(this) newtrie {is_last ? nullptr : new trie<T>};
 				std::unique_ptr<trie<T>> newtrie_u_p(newtrie);
 
 				auto insertedIt = currentNode->children.emplace(*inputIt, std::move(newtrie_u_p)).first;
@@ -179,7 +178,7 @@ std::pair<typename trie<T>::iterator,bool> trie<T>::insert(const value_type& val
 				}
 				else {
 					if(childIt->second.get() == nullptr) {
-						childIt->second.reset(new trie<T>{currentNode, true});
+						childIt->second.reset(new trie<T>{true});
 						inserted = true;
 					}
 					// Child now definitely exists, move to it.

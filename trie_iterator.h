@@ -8,7 +8,6 @@
 template<typename T>
 class trie<T>::iterator : public std::iterator<std::bidirectional_iterator_tag, T> {
 	friend class trie<T>;
-	// TODO: Either this structure or trie::parent is not needed
 	struct state {
 		state(const trie<T>* const node, const typename std::map<typename T::value_type, std::unique_ptr<trie<T>>>::const_iterator& node_map_it ) :
 			node{node}, node_map_it{node_map_it} {}
