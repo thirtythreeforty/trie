@@ -84,7 +84,7 @@ trie<T>::trie(const trie<T>& other) :
 	// performance boost
 
 	// Deep copy the children
-	for(auto const &it : other.children) {
+	for(const auto& it : other.children) {
 		// Separate creation of unique_ptr for exception safety
 		std::unique_ptr<trie<T>> p(new trie<T>(*it.second));
 		children.emplace(it.first, std::move(p));
@@ -101,7 +101,7 @@ template<typename InputIt>
 trie<T>::trie(InputIt begin, InputIt end, bool is_leaf) :
 	is_leaf{is_leaf}
 {
-	for(auto x = begin; x != end; ++x)
+	for(const auto& x = begin; x != end; ++x)
 		insert(*x);
 }
 
