@@ -191,4 +191,11 @@ std::pair<typename trie<T>::iterator,bool> trie<T>::insert(const value_type& val
 	return {std::move(it),inserted};
 }
 
+template<typename T>
+void trie<T>::clear()
+{
+	is_leaf = false;
+	children.clear();
+}
+
 #endif
