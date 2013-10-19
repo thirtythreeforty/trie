@@ -8,6 +8,7 @@
 #include <utility>
 #include <algorithm>
 #include <stdexcept>
+#include <limits>
 
 template<typename T>
 class trie {
@@ -51,7 +52,7 @@ public:
 
 	bool empty() const { return children.empty() && !is_leaf; }
 	size_type size() const;
-	size_type max_size() const;
+	constexpr size_type max_size() const;
 
 	const_iterator find(const key_type&) const;
 	size_type count(const key_type&) const;
@@ -213,6 +214,15 @@ typename trie<T>::size_type trie<T>::size() const
 		else
 			++s;
 	return s;
+}
+
+template<typename T>
+constexpr typename trie<T>::size_type trie<T>::max_size() const
+{
+	// We have a depth limited only by the size of the iterator stack,
+	// and a width limited by the size of the size of the vector.
+	// Multiplying these numbers will overflow size_type.
+	return std::numeric_limits< size_type >::max();
 }
 
 #endif
