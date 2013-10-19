@@ -35,12 +35,8 @@ public:
 	// iterators and related
 	iterator begin();
 	iterator end();
-	std::reverse_iterator<iterator> rbegin();
-	std::reverse_iterator<iterator> rend();
 	const_iterator cbegin() const;
 	const_iterator cend() const;
-	std::reverse_iterator<const_iterator> crbegin() const;
-	std::reverse_iterator<const_iterator> crend() const;
 
 	// other members
 	std::pair<iterator,bool> insert(const value_type&);
