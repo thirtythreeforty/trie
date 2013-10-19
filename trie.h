@@ -33,10 +33,10 @@ public:
 	trie<T>& operator=(trie<T>);
 
 	// iterators and related
-	iterator begin();
-	iterator end();
-	const_iterator cbegin() const;
-	const_iterator cend() const;
+	iterator begin() const;
+	iterator end() const;
+	const_iterator cbegin() const { return begin(); }
+	const_iterator cend() const { return end(); }
 
 	// other members
 	std::pair<iterator,bool> insert(const value_type&);
@@ -110,13 +110,14 @@ trie<T>& trie<T>::operator=(trie<T> other)
 }
 
 template<typename T>
-typename trie<T>::iterator trie<T>::begin()
+typename trie<T>::iterator trie<T>::begin() const
 {
+	// We'll let the iterator fall down to the first valid value.
 	return {this};
 }
 
 template<typename T>
-typename trie<T>::iterator trie<T>::end()
+typename trie<T>::iterator trie<T>::end() const
 {
 	// Here's where we use our friend privileges
 	std::stack<typename iterator::state> temp;
