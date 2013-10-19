@@ -225,4 +225,11 @@ constexpr typename trie<T>::size_type trie<T>::max_size() const
 	return std::numeric_limits< size_type >::max();
 }
 
+template<typename T>
+void trie<T>::swap(trie<T>& other)
+{
+	std::swap(children, other.children);
+	std::swap(is_leaf, other.is_leaf);
+}
+
 #endif
