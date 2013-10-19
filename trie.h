@@ -158,10 +158,10 @@ std::pair<typename trie<T>::iterator,bool> trie<T>::insert(const value_type& val
 				inserted = true;
 
 				decltype(this) newtrie {is_last ? nullptr : new trie<T>};
-				std::unique_ptr<trie<T>> newtrie_u_p(newtrie);
 
-				auto insertedIt = currentNode->children.emplace(childIt, *inputIt, std::move(newtrie_u_p));
-				it.parents.emplace(currentNode, std::move(insertedIt));
+				it.parents.emplace(currentNode,
+					currentNode->children.emplace(childIt, *inputIt, std::unique_ptr<trie<T>>(newtrie))
+				);
 
 				currentNode = newtrie;
 			}
