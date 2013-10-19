@@ -30,7 +30,7 @@ public:
 	~trie() =default;
 
 	// operators
-	trie<T>& operator=(const trie<T>&);
+	trie<T>& operator=(trie<T>);
 
 	// iterators and related
 	iterator begin();
@@ -107,7 +107,7 @@ trie<T>::trie(InputIt begin, InputIt end, bool is_leaf) :
 }
 
 template<typename T>
-trie<T>& trie<T>::operator=(const trie<T>& other)
+trie<T>& trie<T>::operator=(trie<T> other)
 {
 	swap(*this, other);
 	return *this;
