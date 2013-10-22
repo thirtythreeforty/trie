@@ -17,9 +17,8 @@ class trie<T>::iterator : public std::iterator<std::bidirectional_iterator_tag, 
 		const trie<T>* node;
 		typename std::vector<std::pair<typename T::value_type, std::unique_ptr<trie<T>>>>::const_iterator node_map_it;
 	};
-	enum class fall_to {left, right};
 public:
-	typedef T value_type;
+	typedef const T value_type;
 	iterator() =default;
 	iterator(const trie<T>* node) {
 		parents.emplace(node, node->children.cbegin());
@@ -85,7 +84,7 @@ public:
 private:
 	iterator(const std::stack<state>& parents, const T& built, bool at_end, bool at_leaf) :
 		parents{parents}, built{built}, at_end{at_end}, at_leaf{at_leaf} {}
-	void fall_down(const enum fall_to fall = fall_to::left) {
+	void fall_down() {
 		while(!at_valid_leaf()) {
 			if(parents.top().node_map_it == parents.top().node->children.cend()) {
 				if(parents.size() == 1) {
