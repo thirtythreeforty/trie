@@ -9,13 +9,13 @@ template<typename T>
 class trie<T>::iterator : public std::iterator<std::bidirectional_iterator_tag, T> {
 	friend class trie<T>;
 	struct state {
-		state(const trie<T>* const node, const typename std::vector<std::pair<typename T::value_type, std::unique_ptr<trie<T>>>>::const_iterator& node_map_it ) :
+		state(const trie<T>* const node, const typename trie<T>::child_map_type::const_iterator& node_map_it ) :
 			node{node}, node_map_it{node_map_it} {}
 		bool operator==(const state& other) const {
 			return node == other.node && node_map_it == other.node_map_it;
 		}
 		const trie<T>* node;
-		typename std::vector<std::pair<typename T::value_type, std::unique_ptr<trie<T>>>>::const_iterator node_map_it;
+		typename trie<T>::child_map_type::const_iterator node_map_it;
 	};
 public:
 	typedef const T value_type;

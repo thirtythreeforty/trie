@@ -61,7 +61,8 @@ public:
 	static void swap(trie<T>& a, trie<T>& b) { a.swap(b); }
 
 private:
-	std::vector<std::pair<typename T::value_type, std::unique_ptr<trie<T>>>> children;
+	typedef std::vector<std::pair<typename T::value_type, std::unique_ptr<trie<T>>>> child_map_type;
+	child_map_type children;
 	bool is_leaf = false;
 };
 
