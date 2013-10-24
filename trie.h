@@ -194,6 +194,37 @@ std::pair<typename trie<T>::iterator,bool> trie<T>::insert(const value_type& val
 }
 
 template<typename T>
+typename trie<T>::iterator trie<T>::erase(const_iterator it)
+{
+	auto nextit(it);
+	++nextit;
+
+	// The const_cast<>s here are actually not bad design.
+	// The reason for this is that the iterator must be an iterator of *this,
+	// or behavior is undefined.  Because this non-const function is executing,
+	// it means that the pointer must be to a non-const trie<T>!
+
+	if(it.at_leaf)
+		const_cast<trie<T>*&>(it.parents.top().node)->is_leaf = false;
+	else {
+		while(!it.parents.top().node->is_leaf && it.parents.top().node->children.size() == 1)
+			it.parents.pop();
+		const_cast<trie<T>*&>(it.parents.top().node)->children.erase(it.parents.top().node_map_it);
+	}
+
+	return nextit;
+}
+
+template<typename T>
+typename trie<T>::iterator trie<T>::erase(const_iterator first, const_iterator last)
+{
+	while(first != last)
+		first = erase(first);
+
+	return last;
+}
+
+template<typename T>
 void trie<T>::clear()
 {
 	is_leaf = false;
