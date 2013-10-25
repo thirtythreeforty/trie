@@ -211,7 +211,14 @@ typename trie<T>::iterator trie<T>::erase(const_iterator it)
 	else {
 		while(!it.parents.top().node->is_leaf && it.parents.top().node->children.size() == 1)
 			it.parents.pop();
-		const_cast<trie<T>*&>(it.parents.top().node)->children.erase(it.parents.top().node_map_it);
+
+		// HACK! Because GCC 4.8.x does not implement the C++11 function with signature
+		//    auto std::vector<T>::erase(const_iterator) -> iterator
+		// I am required to reinterpret_cast<> a pointer to the const_iterator to be a pointer
+		// to a regular iterator.  I have no guarantee that this will work, and as soon as GCC
+		// 4.9 is released, this should be replaced with:
+		//const_cast<trie<T>*&>(it.parents.top().node)->children.erase(it.parents.top().node_map_it);
+		const_cast<trie<T>*&>(it.parents.top().node)->children.erase(*reinterpret_cast<typename child_map_type::iterator*>(&(it.parents.top().node_map_it)));
 	}
 
 	return nextit;
