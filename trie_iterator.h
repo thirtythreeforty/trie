@@ -9,20 +9,20 @@ template<typename T>
 class trie<T>::iterator : public std::iterator<std::bidirectional_iterator_tag, T> {
 	friend class trie<T>;
 	struct state {
-		state(trie<T>* const node, const typename trie<T>::child_map_type::iterator& node_map_it ) :
+		state(const trie<T>* const node, const typename trie<T>::child_map_type::const_iterator& node_map_it ) :
 			node{node}, node_map_it{node_map_it} {}
 		bool operator==(const state& other) const {
 			return node == other.node && node_map_it == other.node_map_it;
 		}
-		trie<T>* node;
-		typename trie<T>::child_map_type::iterator node_map_it;
+		const trie<T>* node;
+		typename trie<T>::child_map_type::const_iterator node_map_it;
 	};
 public:
 	typedef const T value_type;
 	iterator() =default;
-	iterator(trie<T>* node) {
-		parents.emplace(node, node->children.begin());
-		at_end = (parents.top().node_map_it == parents.top().node->children.end());
+	iterator(const trie<T>* node) {
+		parents.emplace(node, node->children.cbegin());
+		at_end = (parents.top().node_map_it == parents.top().node->children.cend());
 		at_leaf = parents.top().node->is_leaf;
 		fall_down();
 	}
@@ -86,7 +86,7 @@ private:
 		parents{parents}, built{built}, at_end{at_end}, at_leaf{at_leaf} {}
 	void fall_down() {
 		while(!at_valid_leaf()) {
-			if(parents.top().node_map_it == parents.top().node->children.end()) {
+			if(parents.top().node_map_it == parents.top().node->children.cend()) {
 				if(parents.size() == 1) {
 					at_end = true;
 					return;
@@ -116,7 +116,7 @@ private:
 	}
 	bool inline can_go_back() {
 		return (!at_leaf && parents.top().node->is_leaf) ||
-		       (parents.top().node_map_it != parents.top().node->children.begin()) ||
+		       (parents.top().node_map_it != parents.top().node->children.cbegin()) ||
 		       (at_end && !parents.top().node->children.empty());
 	}
 	void inline remove_state_and_regress() {
@@ -125,13 +125,13 @@ private:
 			at_end = false;
 		else
 			built.pop_back();
-		if(parents.top().node_map_it == parents.top().node->children.begin())
+		if(parents.top().node_map_it == parents.top().node->children.cbegin())
 			at_leaf = true;
 		else
 			--parents.top().node_map_it;
 	}
 	bool inline at_valid_leaf() {
-		return parents.top().node_map_it != parents.top().node->children.end() &&
+		return parents.top().node_map_it != parents.top().node->children.cend() &&
 		       (at_leaf ||
 		        (parents.top().node_map_it->second.get() == nullptr));
 	}
@@ -141,8 +141,8 @@ private:
 			if(parents.top().node_map_it->second.get() != nullptr) {
 				parents.emplace( parents.top().node_map_it->second.get(),
 				                 forward?
-				                  parents.top().node_map_it->second.get()->children.begin() :
-				                  --parents.top().node_map_it->second.get()->children.end() );
+				                  parents.top().node_map_it->second.get()->children.cbegin() :
+				                  --parents.top().node_map_it->second.get()->children.cend() );
 				if(forward)
 					at_leaf = parents.top().node->is_leaf;
 			}
