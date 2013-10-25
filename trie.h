@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <stdexcept>
 #include <limits>
+#include <initializer_list>
 
 template<typename T>
 class trie {
@@ -30,6 +31,7 @@ public:
 	trie(const trie<T>&);
 	trie(trie<T>&&);
 	template<typename InputIt> trie(InputIt, InputIt, bool = false);
+	trie(std::initializer_list<T>);
 
 	// destructor, auto-generated one is fine
 	~trie() =default;
@@ -101,6 +103,14 @@ trie<T>::trie(InputIt begin, InputIt end, bool is_leaf) :
 {
 	for(const auto& x = begin; x != end; ++x)
 		insert(*x);
+}
+
+template<typename T>
+trie<T>::trie(std::initializer_list<T> l) :
+	is_leaf{false}
+{
+	for(const auto& e: l)
+		insert(e);
 }
 
 template<typename T>
