@@ -306,6 +306,12 @@ typename trie<T>::const_iterator trie<T>::find(const key_type& key) const
 }
 
 template<typename T>
+typename trie<T>::size_type trie<T>::count(const key_type& key) const
+{
+	return find(key) == cend() ? 0 : 1;
+}
+
+template<typename T>
 constexpr typename trie<T>::size_type trie<T>::max_size() const
 {
 	// We have a depth limited only by the size of the iterator stack,
