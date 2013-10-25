@@ -146,6 +146,7 @@ std::pair<typename trie<T>::iterator,bool> trie<T>::insert(const value_type& val
 		for(auto inputIt = value.cbegin(); inputIt != value.cend(); ++inputIt) {
 			bool is_last = (inputIt + 1 == value.end());
 
+			// TODO should std::binary_search be used here?
 			// A clever application of >= here allows us to re-use the iterator for emplace,
 			// should the requested element not be found.
 			auto childIt = std::find_if(currentNode->children.begin(), currentNode->children.end(),
@@ -256,6 +257,7 @@ template<typename T>
 typename trie<T>::const_iterator trie<T>::find(const key_type& key) const
 {
 	iterator it{{}, key, false, false};
+	// TODO Change all such "initializers" to initializers
 	decltype(this) currentNode = this;
 
 	if(key.empty()) {
