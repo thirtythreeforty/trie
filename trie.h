@@ -111,14 +111,14 @@ trie<T>& trie<T>::operator=(trie<T> other)
 }
 
 template<typename T>
-typename trie<T>::iterator trie<T>::begin() const
+auto trie<T>::begin() const -> iterator
 {
 	// We'll let the iterator fall down to the first valid value.
 	return {this};
 }
 
 template<typename T>
-typename trie<T>::iterator trie<T>::end() const
+auto trie<T>::end() const -> iterator
 {
 	// Here's where we use our friend privileges
 	std::stack<typename iterator::state> temp;
@@ -127,7 +127,7 @@ typename trie<T>::iterator trie<T>::end() const
 }
 
 template<typename T>
-std::pair<typename trie<T>::iterator,bool> trie<T>::insert(const value_type& value)
+auto trie<T>::insert(const value_type& value) -> std::pair<iterator,bool>
 {
 	bool inserted = false;
 	iterator it;
@@ -196,7 +196,7 @@ std::pair<typename trie<T>::iterator,bool> trie<T>::insert(const value_type& val
 }
 
 template<typename T>
-typename trie<T>::iterator trie<T>::erase(const_iterator it)
+auto trie<T>::erase(const_iterator it) -> iterator
 {
 	auto nextit(it);
 	++nextit;
@@ -225,7 +225,7 @@ typename trie<T>::iterator trie<T>::erase(const_iterator it)
 }
 
 template<typename T>
-typename trie<T>::iterator trie<T>::erase(const_iterator first, const_iterator last)
+auto trie<T>::erase(const_iterator first, const_iterator last) -> iterator
 {
 	while(first != last)
 		first = erase(first);
@@ -241,7 +241,7 @@ void trie<T>::clear()
 }
 
 template<typename T>
-typename trie<T>::size_type trie<T>::size() const
+auto trie<T>::size() const -> size_type
 {
 	size_type s = is_leaf ? 1 : 0;
 	for(const auto& child : children)
@@ -253,7 +253,7 @@ typename trie<T>::size_type trie<T>::size() const
 }
 
 template<typename T>
-typename trie<T>::const_iterator trie<T>::find(const key_type& key) const
+auto trie<T>::find(const key_type& key) const -> const_iterator
 {
 	iterator it{{}, key, false, false};
 	decltype(this) currentNode{this};
@@ -304,13 +304,13 @@ typename trie<T>::const_iterator trie<T>::find(const key_type& key) const
 }
 
 template<typename T>
-typename trie<T>::size_type trie<T>::count(const key_type& key) const
+auto trie<T>::count(const key_type& key) const -> size_type
 {
 	return find(key) == cend() ? 0 : 1;
 }
 
 template<typename T>
-constexpr typename trie<T>::size_type trie<T>::max_size() const
+constexpr auto trie<T>::max_size() const -> size_type
 {
 	// We have a depth limited only by the size of the iterator stack,
 	// and a width limited by the size of the size of the vector.
