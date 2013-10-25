@@ -58,6 +58,11 @@ public:
 		fall_down();
 		return *this;
 	}
+	trie<T>::iterator operator++(int) {
+		value_type temp = this;
+		++this;
+		return temp;
+	}
 	trie<T>::iterator& operator--() {
 		while(!can_go_back()) {
 			if(!at_leaf)
@@ -76,6 +81,11 @@ public:
 			step_down(false);
 		step_down(false);
 		return *this;
+	}
+	trie<T>::iterator operator--(int) {
+		value_type temp = this;
+		--this;
+		return temp;
 	}
 
 	bool operator==(const typename trie<T>::iterator& other) const {
