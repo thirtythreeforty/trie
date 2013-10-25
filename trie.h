@@ -12,6 +12,11 @@
 
 template<typename T>
 class trie {
+	// data members and types
+	typedef std::vector<std::pair<typename T::value_type, std::unique_ptr<trie<T>>>> child_map_type;
+	child_map_type children;
+	bool is_leaf = false;
+
 public:
 	// misc. declarations
 	class iterator;
@@ -59,11 +64,6 @@ public:
 
 	void swap(trie<T>&);
 	static void swap(trie<T>& a, trie<T>& b) { a.swap(b); }
-
-private:
-	typedef std::vector<std::pair<typename T::value_type, std::unique_ptr<trie<T>>>> child_map_type;
-	child_map_type children;
-	bool is_leaf = false;
 };
 
 // Definition of trie<T>::iterator

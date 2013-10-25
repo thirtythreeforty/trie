@@ -8,7 +8,12 @@
 template<typename T>
 class trie<T>::iterator : public std::iterator<std::bidirectional_iterator_tag, T> {
 	friend class trie<T>;
+
+	// data members and types
 	struct state {
+		const trie<T>* node;
+		typename trie<T>::child_map_type::const_iterator node_map_it;
+
 		state(const trie<T>* const node, const typename trie<T>::child_map_type::const_iterator& node_map_it ) :
 			node{node}, node_map_it{node_map_it} {}
 		state(const trie<T>* const node, const typename trie<T>::child_map_type::const_iterator&& node_map_it ) :
@@ -16,9 +21,15 @@ class trie<T>::iterator : public std::iterator<std::bidirectional_iterator_tag, 
 		bool operator==(const state& other) const {
 			return node == other.node && node_map_it == other.node_map_it;
 		}
-		const trie<T>* node;
-		typename trie<T>::child_map_type::const_iterator node_map_it;
 	};
+
+	std::stack<state> parents;
+	// TODO: we could switch the use of push_back and pop_back for insert and erase
+	// using an end iterator, to gain some additional compatibility.
+	T built;
+	bool at_end;
+	bool at_leaf;
+
 public:
 	typedef const T value_type;
 	iterator() =default;
@@ -160,13 +171,6 @@ private:
 			}
 		}
 	}
-
-	std::stack<state> parents;
-	// TODO: we could switch the use of push_back and pop_back for insert and erase
-	// using an end iterator, to gain some additional compatibility.
-	T built;
-	bool at_end;
-	bool at_leaf;
 };
 
 #endif
