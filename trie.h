@@ -256,8 +256,7 @@ template<typename T>
 typename trie<T>::const_iterator trie<T>::find(const key_type& key) const
 {
 	iterator it{{}, key, false, false};
-	// TODO Change all such "initializers" to initializers
-	decltype(this) currentNode = this;
+	decltype(this) currentNode{this};
 
 	if(key.empty()) {
 		// Special case for empty value

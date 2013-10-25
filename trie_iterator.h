@@ -11,7 +11,8 @@ class trie<T>::iterator : public std::iterator<std::bidirectional_iterator_tag, 
 	struct state {
 		state(const trie<T>* const node, const typename trie<T>::child_map_type::const_iterator& node_map_it ) :
 			node{node}, node_map_it{node_map_it} {}
-		// TODO, Implement move-constructor
+		state(const trie<T>* const node, const typename trie<T>::child_map_type::const_iterator&& node_map_it ) :
+			node{node}, node_map_it{std::move(node_map_it)} {}
 		bool operator==(const state& other) const {
 			return node == other.node && node_map_it == other.node_map_it;
 		}
