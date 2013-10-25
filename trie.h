@@ -253,6 +253,57 @@ typename trie<T>::size_type trie<T>::size() const
 }
 
 template<typename T>
+typename trie<T>::const_iterator trie<T>::find(const key_type& key) const
+{
+	iterator it{{}, key, false, false};
+	decltype(this) currentNode = this;
+
+	if(key.empty()) {
+		// Special case for empty value
+		if(!this->is_leaf)
+			it = cend();
+		else {
+			it.parents.emplace(currentNode, currentNode->children.cbegin());
+			it.at_leaf = true;
+		}
+	}
+	else
+		for(auto inputIt = key.cbegin(); inputIt != key.cend(); ++inputIt) {
+			auto childIt = std::find_if(currentNode->children.cbegin(), currentNode->children.cend(),
+			                       [&inputIt](const std::pair<typename T::value_type,std::unique_ptr<trie<T>>> & x)
+			                       { return x.first >= *inputIt; });
+			if(childIt == currentNode->children.end() || childIt->first != *inputIt)
+				// Child is not found
+				it = cend();
+			else {
+				// Child is found.  Move to it.
+				bool is_last = (inputIt + 1 == key.end());
+				if(is_last) {
+					it.parents.emplace(currentNode, childIt);
+					if(childIt->second.get() != nullptr) {
+						// Basically descend *twice*
+						currentNode = childIt->second.get();
+						if(!currentNode->is_leaf)
+							it = cend();
+						else {
+							it.parents.emplace(currentNode, currentNode->children.begin());
+							it.at_leaf = true;
+						}
+					}
+				}
+				else {
+					if(childIt->second.get() == nullptr)
+						it = cend();
+					// Child now definitely exists, move to it.
+					it.parents.emplace(currentNode, childIt);
+					currentNode = childIt->second.get();
+				}
+			}
+		}
+	return it;
+}
+
+template<typename T>
 constexpr typename trie<T>::size_type trie<T>::max_size() const
 {
 	// We have a depth limited only by the size of the iterator stack,
