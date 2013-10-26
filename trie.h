@@ -271,7 +271,7 @@ auto trie<T>::find(const key_type& key) const -> const_iterator
 	if(key.empty()) {
 		// Special case for empty value
 		if(!this->is_leaf)
-			it = cend();
+			return cend();
 		else {
 			it.parents.emplace(currentNode, currentNode->children.cbegin());
 			it.at_leaf = true;
@@ -284,7 +284,7 @@ auto trie<T>::find(const key_type& key) const -> const_iterator
 			                                          { return x <= y.first; });
 			if(childIt == currentNode->children.end() || childIt->first != *inputIt)
 				// Child is not found
-				it = cend();
+				return cend();
 			else {
 				// Child is found.  Move to it.
 				bool is_last = (inputIt + 1 == key.end());
@@ -294,7 +294,7 @@ auto trie<T>::find(const key_type& key) const -> const_iterator
 						// Basically descend *twice*
 						currentNode = childIt->second.get();
 						if(!currentNode->is_leaf)
-							it = cend();
+							return cend();
 						else {
 							it.parents.emplace(currentNode, currentNode->children.begin());
 							it.at_leaf = true;
@@ -303,7 +303,7 @@ auto trie<T>::find(const key_type& key) const -> const_iterator
 				}
 				else {
 					if(childIt->second.get() == nullptr)
-						it = cend();
+						return cend();
 					// Child now definitely exists, move to it.
 					it.parents.emplace(currentNode, childIt);
 					currentNode = childIt->second.get();
