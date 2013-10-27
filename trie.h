@@ -231,14 +231,27 @@ auto trie<T>::erase(const_iterator it) -> iterator
 
 		// HACK! Because GCC 4.8.x does not implement the C++11 function with signature
 		//    auto std::vector<T>::erase(const_iterator) -> iterator
-		// I am required to reinterpret_cast<> a pointer to the const_iterator to be a pointer
-		// to a regular iterator.  I have no guarantee that this will work, and as soon as GCC
-		// 4.9 is released, this should be replaced with:
+		// I am required to use this comparatively nasty (and slower) construct.
+		// As soon as GCC 4.9 is released, this whole thing should be replaced with:
 		//const_cast<trie<T>*&>(it.parents.top().node)->children.erase(it.parents.top().node_map_it);
-		const_cast<trie<T>*&>(it.parents.top().node)->children.erase(*reinterpret_cast<typename child_map_type::iterator*>(&(it.parents.top().node_map_it)));
+		auto nonconst_it = const_cast<trie<T>*&>(it.parents.top().node)->children.begin();
+		std::advance(nonconst_it, std::distance(it.parents.top().node->children.cbegin(), it.parents.top().node_map_it));
+		const_cast<trie<T>*&>(it.parents.top().node)->children.erase(nonconst_it);
 	}
 
 	return nextit;
+}
+
+template<typename T>
+auto trie<T>::erase(const key_type& key) -> size_type
+{
+	auto found = find(key);
+	if(found == end())
+		return 0;
+	else {
+		erase(found);
+		return 1;
+	}
 }
 
 template<typename T>
