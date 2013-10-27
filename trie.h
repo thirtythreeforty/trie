@@ -80,14 +80,12 @@ template<typename T>
 trie<T>::trie(const trie<T>& other) :
 	is_leaf{other.is_leaf}
 {
-	// Protip:  change unique_ptr to smart_ptr and implement a copy-on-write
-	// performance boost
-
 	// Deep copy the children
+	children.reserve(other.children.size());
 	for(const auto& it : other.children) {
 		// Separate creation of unique_ptr for exception safety
 		std::unique_ptr<trie<T>> p(new trie<T>(*it.second));
-		children.emplace(it.first, std::move(p));
+		children.emplace(children.end(), it.first, std::move(p));
 	}
 }
 
@@ -98,10 +96,10 @@ trie<T>::trie(trie<T>&& other) :
 
 template<typename T>
 template<typename InputIt>
-trie<T>::trie(InputIt begin, InputIt end, bool is_leaf) :
+trie<T>::trie(const InputIt begin, const InputIt end, bool is_leaf) :
 	is_leaf{is_leaf}
 {
-	for(const auto& x = begin; x != end; ++x)
+	for(auto x = begin; x != end; ++x)
 		insert(*x);
 }
 
