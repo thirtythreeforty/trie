@@ -47,6 +47,7 @@ public:
 
 	// other members
 	std::pair<iterator,bool> insert(const value_type&);
+	template<typename InputIt> void insert(InputIt, const InputIt&);
 
 	iterator erase(const_iterator);
 	size_type erase(const key_type&);
@@ -201,6 +202,14 @@ auto trie<T>::insert(const value_type& value) -> std::pair<iterator,bool>
 		}
 	it.built = value;
 	return {std::move(it),inserted};
+}
+
+template<typename T>
+template<typename InputIt>
+void trie<T>::insert(InputIt start, const InputIt& finish)
+{
+	while(start != finish)
+		insert(*(start++));
 }
 
 template<typename T>
