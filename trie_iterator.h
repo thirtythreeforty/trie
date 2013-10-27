@@ -71,8 +71,8 @@ public:
 		return *this;
 	}
 	trie<T>::iterator operator++(int) {
-		value_type temp = this;
-		++this;
+		iterator temp = *this;
+		++*this;
 		return temp;
 	}
 	trie<T>::iterator& operator--() {
@@ -95,8 +95,8 @@ public:
 		return *this;
 	}
 	trie<T>::iterator operator--(int) {
-		value_type temp = this;
-		--this;
+		iterator temp = *this;
+		--*this;
 		return temp;
 	}
 
