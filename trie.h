@@ -85,7 +85,7 @@ trie<T>::trie(const trie<T>& other) :
 	children.reserve(other.children.size());
 	for(const auto& it : other.children) {
 		// Separate creation of unique_ptr for exception safety
-		std::unique_ptr<trie<T>> p(new trie<T>(*it.second));
+		std::unique_ptr<trie<T>> p(it.second == nullptr ? nullptr : new trie<T>(*it.second));
 		children.emplace(children.end(), it.first, std::move(p));
 	}
 }
@@ -167,6 +167,7 @@ auto trie<T>::insert(const value_type& value) -> std::pair<iterator,bool>
 
 				decltype(this) newtrie {is_last ? nullptr : new trie<T>};
 
+				// FIXME Inconsistent unique_ptr construction
 				it.parents.emplace(currentNode,
 					currentNode->children.emplace(childIt, *inputIt, std::unique_ptr<trie<T>>(newtrie))
 				);
