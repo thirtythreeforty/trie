@@ -240,7 +240,8 @@ auto trie<T>::erase(const_iterator it) -> iterator
 		const_cast<trie<T>*&>(it.parents.top().node)->children.erase(nonconst_it);
 	}
 
-	return nextit;
+	// Because the child list is a vector, we must re-find the next value, because iterators have been invalidated.
+	return find(*nextit);
 }
 
 template<typename T>
