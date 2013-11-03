@@ -226,7 +226,7 @@ auto trie<T>::erase(const_iterator it) -> iterator
 	if(it.at_leaf)
 		const_cast<trie<T>*&>(it.parents.top().node)->is_leaf = false;
 	else {
-		while(!it.parents.top().node->is_leaf && it.parents.top().node->children.size() == 1)
+		while(!it.parents.top().node->is_leaf && it.parents.top().node->children.size() == 1 && it.parents.size() > 1)
 			it.parents.pop();
 
 		// HACK! Because GCC 4.8.x does not implement the C++11 function with signature
