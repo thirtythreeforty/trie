@@ -61,10 +61,6 @@ public:
 	const_iterator find(const key_type&) const;
 	size_type count(const key_type&) const;
 
-	const_iterator lower_bound(const value_type&) const;
-	const_iterator upper_bound(const value_type&) const;
-	std::pair<const_iterator,const_iterator> equal_range(const value_type&) const;
-
 	void swap(trie<T>&);
 	static void swap(trie<T>& a, trie<T>& b) { a.swap(b); }
 };
