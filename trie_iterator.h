@@ -35,8 +35,8 @@ public:
 	iterator() =default;
 	iterator(const trie<T>* node) {
 		parents.emplace(node, node->children.cbegin());
-		at_end = (parents.top().node_map_it == parents.top().node->children.cend());
 		at_leaf = parents.top().node->is_leaf;
+		at_end = (parents.top().node->children.size() == 0 && !at_leaf);
 		fall_down();
 	}
 	~iterator() =default;
@@ -71,7 +71,7 @@ public:
 		return *this;
 	}
 	trie<T>::iterator operator++(int) {
-		iterator temp = *this;
+		iterator temp {*this};
 		++*this;
 		return temp;
 	}
@@ -95,7 +95,7 @@ public:
 		return *this;
 	}
 	trie<T>::iterator operator--(int) {
-		iterator temp = *this;
+		iterator temp {*this};
 		--*this;
 		return temp;
 	}
