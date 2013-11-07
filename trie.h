@@ -238,10 +238,15 @@ auto trie<T>::erase(const_iterator it) -> iterator
 		auto nonconst_it = const_cast<trie<T>*&>(it.parents.top().node)->children.begin();
 		std::advance(nonconst_it, std::distance(it.parents.top().node->children.cbegin(), it.parents.top().node_map_it));
 		const_cast<trie<T>*&>(it.parents.top().node)->children.erase(nonconst_it);
+		if(it.parents.top().node->children.size() == 0 && it.parents.size() > 1) {
+			it.parents.pop();
+			const_cast<std::unique_ptr<trie<T>>&>(it.parents.top().node_map_it->second).reset(nullptr);
+		}
 	}
 
 	// Because the child list is a vector, we must re-find the next value, because iterators have been invalidated.
-	return find(*nextit);
+	// It doesn't need to be recreated if the iterator is at_end.
+	return nextit.at_end ? end() : find(*nextit);
 }
 
 template<typename T>
