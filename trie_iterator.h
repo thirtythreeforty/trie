@@ -34,6 +34,7 @@ public:
 	typedef const T value_type;
 	iterator() =default;
 	iterator(const trie<T>* node) {
+		built.reserve(16);  // Speed up walking around
 		parents.emplace(node, node->children.cbegin());
 		at_leaf = parents.top().node->is_leaf;
 		at_end = (parents.top().node->children.size() == 0 && !at_leaf);

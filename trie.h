@@ -128,7 +128,9 @@ auto trie<T>::end() const -> iterator
 	// Here's where we use our friend privileges
 	std::stack<typename iterator::state> temp;
 	temp.push({this, this->children.cend()});
-	return {std::move(temp), {}, true, false};
+	T built;
+	built.reserve(16);
+	return {std::move(temp), std::move(built), true, false};
 }
 
 template<typename T>
