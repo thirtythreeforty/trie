@@ -16,6 +16,6 @@ $(EXEC): $(OBJS)
 	$(CXX) $(CXXFLAGS) -MM $^ > ./.depend
 
 clean:
-	$(RM) $(OBJS)
+	$(RM) $(OBJS) $(EXEC)
 
 -include .depend
