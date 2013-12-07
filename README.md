@@ -1,6 +1,6 @@
 `trie` is a templatized trie container library written in C++11.  It aims to be
 compatible with STL syntax.  It possesses bidirectional iterators and most 
-(meaningful) STL methods.  It can be store any iterable container, such as 
+(meaningful) STL methods.  It can store any iterable container, such as 
 `std::string` or `std::vector<T>`.  This `trie` was written as a project for a 
 college course, and is fairly well documented throughout.  It is believed to be 
 reasonably bug-free.  The writeup is included in `report.pdf`.
