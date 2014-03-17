@@ -11,5 +11,4 @@ data.  Unfortunately, performance is generally slightly worse than that of a
 improvement is to implement a full PATRICIA trie algorithm; this would substantially 
 increase algorithm complexity.
 
-`trie` is released under the GNU LGPL.  See the file COPYING for more details.  Pull 
-requests and bug reports are welcome!
+`trie` is released under the GNU LGPL.  See the files `COPYING` and `COPYING.LESSER` for more details.  Pull requests and bug reports are welcome!
