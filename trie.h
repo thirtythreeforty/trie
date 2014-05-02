@@ -306,7 +306,7 @@ auto trie<T>::size() const -> size_type
 template<typename T>
 auto trie<T>::find(const key_type& key) const -> const_iterator
 {
-	iterator it{{}, key, false, false};
+	iterator it{std::stack<typename iterator::state>{}, key, false, false};
 	decltype(this) currentNode{this};
 
 	if(key.empty()) {
