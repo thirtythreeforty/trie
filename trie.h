@@ -244,14 +244,14 @@ auto trie<T>::erase(const_iterator it) -> iterator
 		while(!it.parents.top().node->is_leaf && it.parents.top().node->children.size() == 1 && it.parents.size() > 1)
 			it.parents.pop();
 
-		// HACK! Because GCC 4.8.x does not implement the C++11 function with signature
+		// Because GCC 4.8.x does not implement the C++11 function with signature
 		//    auto std::vector<T>::erase(const_iterator) -> iterator
-		// I am required to use this comparatively nasty (and slower) construct.
-		// As soon as GCC 4.9 is released, this whole thing should be replaced with:
-		//const_cast<trie<T>*&>(it.parents.top().node)->children.erase(it.parents.top().node_map_it);
-		auto nonconst_it = const_cast<trie<T>*&>(it.parents.top().node)->children.begin();
-		std::advance(nonconst_it, std::distance(it.parents.top().node->children.cbegin(), it.parents.top().node_map_it));
-		const_cast<trie<T>*&>(it.parents.top().node)->children.erase(nonconst_it);
+		// You may required to use this comparatively nasty (and slower) construct:
+		//auto nonconst_it = const_cast<trie<T>*&>(it.parents.top().node)->children.begin();
+		//std::advance(nonconst_it, std::distance(it.parents.top().node->children.cbegin(), it.parents.top().node_map_it));
+		//const_cast<trie<T>*&>(it.parents.top().node)->children.erase(nonconst_it);
+		const_cast<trie<T>*&>(it.parents.top().node)->children.erase(it.parents.top().node_map_it);
+
 		if(it.parents.top().node->children.size() == 0 && it.parents.size() > 1) {
 			it.parents.pop();
 			const_cast<std::unique_ptr<trie<T>>&>(it.parents.top().node_map_it->second).reset(nullptr);
