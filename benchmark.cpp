@@ -9,7 +9,7 @@
 #include <chrono>
 #include <algorithm>
 #include <cassert>
- 
+
 #include "trie.h"
 
 using namespace std;
@@ -19,6 +19,7 @@ template<typename T>
 void readIntoContainer(T& t)
 {
 	std::ifstream inp("dict");
+	assert(inp.good());
 	while(inp.good()) {
 		std::string line;
 		inp >> line;
@@ -55,6 +56,7 @@ int main()
 	vector<string> source;
 
 	readIntoContainer(source);
+	assert(source.size() >= largest);
 
 	list<string>          lsrc(begin(source), begin(source) + largest);
 	set<string>           ssrc(begin(source), begin(source) + largest);
