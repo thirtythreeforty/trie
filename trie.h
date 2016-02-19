@@ -50,7 +50,7 @@ public:
 	trie(std::initializer_list<T>);
 
 	// destructor, auto-generated one is fine
-	virtual ~trie() =default;
+	~trie() =default;
 
 	// operators
 	trie<T>& operator=(trie<T>);

@@ -40,7 +40,7 @@ public:
 		at_end = (parents.top().node->children.size() == 0 && !at_leaf);
 		fall_down();
 	}
-	virtual ~iterator() =default;
+	~iterator() =default;
 	iterator(const typename trie<T>::iterator& other) =default;
 	iterator(const typename trie<T>::iterator&& other) :
 		parents{std::move(other.parents)},
